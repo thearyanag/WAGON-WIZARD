@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-require('dotenv').config();
+const dotenv = require('dotenv').config()
 
 //definig the express app
 const app = express();
@@ -21,10 +21,11 @@ app.use(morgan('combined'));
 const loginRouter = require('./modules/login')
 
 port = 3000;
+heroku_port=process.env.port;
 
 app.use('/authenticate' , loginRouter);
 
-app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
+app.listen(heroku_port || port, () => {
+    console.log(`Example app listening at http://localhost:${heroku_port}`)
   })
 
