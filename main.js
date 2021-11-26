@@ -21,7 +21,7 @@ app.use(morgan('combined'));
 const loginRouter = require('./modules/login')
 
 port = 3000;
-heroku_port=process.env.port;
+heroku_port=process.env.PORT;
 
 app.use('/authenticate' , loginRouter);
 
