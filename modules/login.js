@@ -1,6 +1,11 @@
+const dotenv = require('dotenv').config()
+
 const login = require('express').Router();
 
-const twilio_service_id='VAd25bedb8ba696875f5067f321ea586bc';
+const accountSid = process.env.twilioAccountSid;
+const authToken = process.env.twilioAuthToken;
+const client = require('twilio')(accountSid, authToken);
+const twilio_service_id=process.env.twilioServiceId;
 
 login.post('/number' ,async (req , res) => {
     const { number } = req.body; 
