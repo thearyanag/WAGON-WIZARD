@@ -24,6 +24,9 @@ port = 3000;
 heroku_port=process.env.PORT;
 
 app.use('/authenticate' , loginRouter);
+app.get('/' , (req, res) => {
+  res.send('<h1>Hey Nigga , go and do some work</h1>')
+});
 
 app.listen(heroku_port || port, () => {
     console.log(`Example app listening at http://localhost:${heroku_port}`)
