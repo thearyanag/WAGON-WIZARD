@@ -11,13 +11,10 @@ const drive_location = new Schema({
         type : String,
         required : [true , '1']
     },
-    latitude : {
-        type : String,
-        required : [true , '2']
-    },
-    longitude : {
-        type : String,
-        required : [true , '3']
+    cordinates : {
+        type : [Number],
+        required : true,
+        default : [0.0,0.0]; // [latitude,longitude]
     }
 });
 

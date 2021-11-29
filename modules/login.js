@@ -1,6 +1,7 @@
 const dotenv = require('dotenv').config()
-
 const login = require('express').Router();
+
+const driver = require('../models/driverProfile');
 
 const accountSid = process.env.twilioAccountSid;
 const authToken = process.env.twilioAuthToken;
@@ -9,7 +10,6 @@ const twilio_service_id=process.env.twilioServiceId;
 
 login.post('/number' ,async (req , res) => {
     const { number } = req.body; 
-    console.log(number);
     var status; 
     function set(number) {
       status = number;
@@ -54,6 +54,16 @@ login.post('/verifyOtp' , async (req , res) => {
         .then(verification_check => set(verification_check.status));
     if(status == "approved") {
       hash = makeid(14);
+
+      const driverP1 = new driver({
+        transanction_hash : hash,
+        contact : {
+          mobile_number : number
+        }
+      });
+
+      await driverP1.save();
+      
       res.send({ 'transanction_hash' : hash });
     } else {
       res.status(404).send("Invalid OTP");
