@@ -1,9 +1,10 @@
 
 //Import the mongoose module
 var mongoose = require('mongoose');
+const dotenv = require('dotenv').config()
 
 //Set up default mongoose connection
-var mongoDB = 'mongodb://localhost:27017/wagonwiz';
+var mongoDB = process.env.DATABASE_URI;
 mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
 
 //Get the default connection
