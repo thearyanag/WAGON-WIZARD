@@ -20,12 +20,14 @@ app.use(morgan('combined'));
 
 const loginRouter = require('./modules/login');
 const profileRouter = require('./modules/profile');
+const pickupRouter = require('./modules/pickup');
 
 port = 3000;
 heroku_port=process.env.PORT;
 
 app.use('/authenticate' , loginRouter);
 app.use('/profile' , profileRouter);
+app.use('/pickupScreen' , pickupRouter);
 
 app.get('/' , (req, res) => {
   res.send('<h1>Hey Nigga , go and do some work</h1>')

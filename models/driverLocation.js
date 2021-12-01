@@ -14,7 +14,7 @@ const drive_location = new Schema({
     cordinates : {
         type : [Number],
         required : true,
-        default : [0.0,0.0]; // [latitude,longitude]
+        default : [0.0,0.0] // [latitude,longitude]
     }
 });
 

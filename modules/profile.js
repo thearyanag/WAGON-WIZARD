@@ -17,7 +17,7 @@ profile.post('/personalInfo' , async (req , res) => {
 
     await driverProfile.findOneAndUpdate( await query , driverPersonal , function(err, doc) {
         if (err) return res.send(500, {error: err});
-        return res.status(200).send('Succesfully saved.');
+        return res.status(200).send('Succesfully saved.');  
     }).clone().catch(function(err){ console.log(err)});
 });
 
