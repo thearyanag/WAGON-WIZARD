@@ -21,7 +21,7 @@ profile.post('/personalInfo' , async (req , res) => {
     }).clone().catch(function(err){ console.log(err)});
 });
 
-profile.get('/getPersonalInfo' , async (req,res) => {
+profile.post('/getPersonalInfo' , async (req,res) => {
     const { transanction_hash } = req.body;
     const profile = await driverProfile.find({ 'transanction_hash' : transanction_hash } , function(err , doc){}).clone();
     res.status(200).send(profile);
