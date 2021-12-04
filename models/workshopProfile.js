@@ -1,0 +1,44 @@
+const mongoose = require    ("mongoose");  
+const { Schema } = mongoose;
+
+const workshop_details = new Schema({
+    workshop_id : {
+        type : String,
+        required : [true , 'A must !!']
+    },
+    name : {
+        type : String,
+        required : true
+    },
+    contact : {
+        mobile_number : {
+            type : Number,
+            required : [true , 'Phone number is compulsory !'],
+            min : 10
+        },
+        mail_id : {
+            type : String
+        },
+        address : {
+            type : String
+        },
+    },
+    location : {
+        type : [Number], // [latitude,longitude]
+        default : [0.0,0.0]
+    },
+    isVerified : {
+        type : Boolean,
+        default : false
+    },
+    doi : {
+        type : Date,
+        required : true
+    },
+    workshop_rating : {
+        type : Number,
+        default : 3
+    }
+});
+
+module.exports = mongoose.model('workshopProfile' , workshop_details);

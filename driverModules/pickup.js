@@ -3,7 +3,7 @@ const pickup = require('express').Router();
 const tripDetails = require('../models/tripDetails');
 
 pickup.get('/' , async (req , res) => {
-    res.send(200)
+    res.status(200).send('Bella Ciao !');
 });
 
 pickup.get('/getPickupData' , async (req , res) => {
@@ -19,5 +19,6 @@ pickup.get('/getPickupData' , async (req , res) => {
         }
     }).clone();
 });
+
 
 module.exports = pickup;

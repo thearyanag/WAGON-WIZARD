@@ -4,6 +4,10 @@ const pickupDetails = require('./pickupdetails')
 const  ObjectID = require('mongodb').ObjectId;
 
 const tripSchema = new mongoose.Schema({
+  trip_id : {
+    type : String,
+    required : true
+  },
   pickup_user : {
     user_type : {
       type : String,
@@ -12,11 +16,14 @@ const tripSchema = new mongoose.Schema({
     user_id : {
       type : String,
       required : true
+    },
+    contact : {
+      type : Number,
+      required : true
     }
   },
   eta : {
     type : Date,
-    required : true
   },
   vehicle : {
     model : {
@@ -56,7 +63,6 @@ const tripSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now,
-    required: true,
   },
   status : {
     type : String,

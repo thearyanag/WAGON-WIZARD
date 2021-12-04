@@ -18,16 +18,16 @@ app.use(cors());
 // adding morgan to log HTTP requests
 app.use(morgan('combined'));
 
-const loginRouter = require('./modules/login');
-const profileRouter = require('./modules/profile');
-const pickupRouter = require('./modules/pickup');
+const driverRouter = require('./driverModules/driver');
+const adminRouter = require('./adminModules/admin');
+const workshopRouter = require('./workshopModules/workshop');
 
 port = 3000;
 heroku_port=process.env.PORT;
 
-app.use('/authenticate' , loginRouter);
-app.use('/profile' , profileRouter);
-app.use('/pickupScreen' , pickupRouter);
+app.use('/driver' , driverRouter);
+app.use('/admin' , adminRouter);
+app.use('/workshop' , workshopRouter);
 
 app.get('/' , (req, res) => {
   res.send('<h1>Hey Nigga , go and do some work</h1>')
