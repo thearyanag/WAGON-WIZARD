@@ -1,20 +1,19 @@
-const driver = require('./models/driverProfile')
+const dotenv = require('dotenv').config();
+const axios = require('axios');
 
-driver34 = new driver({
-    transanction_hash : "vdbfsdbfgsfdfdf",
-    contact: {
-        mobile_number : 8382932
-    },
-  });
-  
-driverdet2 = {
-    tee_size : 'Yellow'
+key=process.env.GOOGLE_API_KEY;
+
+try {
+
+    const origin ="26.428554"+"%2C"+"80.332833";
+    const destination = "26.438543"+"%2C"+"80.334403";
+
+    const { data } = axios.get(
+        'https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}&destinations=${destination}&key=${key}'
+    )
+    console.log("hey");
+    console.log(typeofooo(data));
+} catch(err) {
+    console.log(err);
 }
 
-const query = { 'transanction_hash' : 'vdbfsdbfgsfdfdf' };
-driver.findOneAndUpdate(query , driverdet2 , {upsert : true} , function(err, doc) {
-    if (err) return res.send(500, {error: err});
-    return res.send('Succesfully saved.');
-});
-
-  

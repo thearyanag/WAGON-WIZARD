@@ -16,6 +16,9 @@ const driver_profile = new Schema({
         type : String,
         required : [true , 'A must !!']
     },
+    profile_pic : {
+        url : String
+    },
     name : {
         type : String
     },

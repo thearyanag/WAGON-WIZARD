@@ -21,16 +21,18 @@ app.use(morgan('combined'));
 const driverRouter = require('./driverModules/driver');
 const adminRouter = require('./adminModules/admin');
 const workshopRouter = require('./workshopModules/workshop');
+const { adminBro , adminBroRouter } = require('./adminModules/adminbro');
 
-port = 3000;
+port = 8000;
 heroku_port=process.env.PORT;
 
 app.use('/driver' , driverRouter);
-app.use('/admin' , adminRouter);
+// app.use('/admin' , adminRouter);
 app.use('/workshop' , workshopRouter);
+app.use(adminBro.options.rootPath , adminBroRouter);
 
 app.get('/' , (req, res) => {
-  res.send('<h1>Hey Nigga , go and do some work</h1>')
+  res.send('<h1>Hey ,  go and do some work</h1>')
 });
 
 app.listen(heroku_port || port, () => {
