@@ -84,8 +84,7 @@ profile.post('/getProfilePic' , async(req , res) => {
     console.log(transanction_hash);
     const profile = await driverProfile.find({ 'transanction_hash' : transanction_hash } , function(err , doc){}).clone();
     const { profile_pic } = profile;
-    console.log(profile_pic);
-    res.status(200).send(profile);
+    res.status(200).send(profile_pic.url);
 
 });
 
