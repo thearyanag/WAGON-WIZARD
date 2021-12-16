@@ -1,49 +1,42 @@
-var express = require('express')
-const fileUpload = require('express-fileupload');
-const app = express();
-const dotenv = require('dotenv');
-dotenv.config();
+const { WebSocketServer } = require("ws");
+const server = require('./server'); 
+const wss = new WebSocketServer({ server });
 
-app.use(fileUpload());
+wss.on("connection", function (ws) {
+    
+  ws.on("message", function (message) {
 
+      msg = JSON.parse(message.toString());
 
-var AWS = require('aws-sdk');
+      console.log(msg);
+      
+      if(msg.dataType == "new") {
+        hash = msg.transanction_hash;
+        ws.id = hash;
+        ws.send("200");  
+      }
 
-app.post('/imageUpload', async (req, res) => {
-    AWS.config.update({
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID, // Access key ID
-        secretAccesskey: process.env.AWS_SECRET_ACCESS_KEY, // Secret access key
-        region: "ap-south-1" //Region
-    })
+      if(msg.dataType == "update") {
+        update = msg.update;
+        console.log(update);
+        if(update == "exit") {
+            ws.close();
+        } else if(update == "location") {
+          hash = ws.id;        
+          const location = msg.location;
+          const [lat,lang] = location;
+          console.log(hash,lat,lang);
 
-
-    const s3 = new AWS.S3();
-
-    // Binary data base64
-    const fileContent  = Buffer.from(req.files.profilepicture.data , 'binary');
-
-    // Setting up S3 upload parameters
-    const params = {
-        ACL : "public-read",
-        Bucket: 'wagenwiz',
-        Key: "profilepics/tesst.jpg", // File name you want to save as in S3
-        Body: fileContent 
-    };
-
-    // Uploading files to the bucket
-    s3.upload(params, function(err, data) {
-        if (err) {
-            throw err;
         }
-        res.send({
-            "response_code": 200,
-            "response_message": "Success",
-            "response_data": data
-        });
-    });
+      }
 
-})
+      if(msg.dataType == "server") {
+        const ip = ws._socket.remoteAddress
+        ws.send(ip);
+      }
 
-app.listen(3000, function () {
-    console.log('Example app listening on port 3000!');
+
+  });
+
+
 });

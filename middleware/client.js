@@ -1,32 +1,16 @@
-var WebSocketClient = require("websocket").client;
+const { WebSocket } = require("ws");
+const wsClient = new WebSocket("ws://localhost:3000");
+const { v4: uuidv4 } = require("uuid");
 
-var client = new WebSocketClient();
-
-client.on("connectFailed", function (error) {
-  console.log("Connect Error: " + error.toString());
+wsClient.addEventListener("open", function (event) {
+  const data = uuidv4();
+  wsClient.send(data);
 });
 
-client.on("connect", function (connection) {
-  console.log("WebSocket Client Connected");
-  connection.on("error", function (error) {
-    console.log("Connection Error: " + error.toString());
-  });
-  connection.on("close", function () {
-    console.log("echo-protocol Connection Closed");
-  });
-  connection.on("message", function (message) {
-    if (message.type === "utf8") {
-      console.log("Received: '" + message.utf8Data + "'");
-    }
-  });
-
-  function sendNumber() {
-    if (connection.connected) {
-      var number = Math.round(Math.random() * 0xffffff);
-      connection.sendUTF(number.toString());
-    }
-  }
-//   sendNumber();
+wsClient.addEventListener("message", function (event) {
+  console.log("Message from server ", event.data);
 });
 
-client.connect("ws://localhost:8090/", "echo-protocol");
+wsClient.addEventListener("close", function (event) {
+  console.log("The connection has been closed");
+});
