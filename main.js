@@ -35,7 +35,3 @@ app.get('/' , (req, res) => {
   res.send('<h1>Hey ,  go and do some work</h1>')
 });
 
-app.listen(heroku_port || port, () => {
-    console.log(`Example app listening at http://localhost:${port}`)
-  })
-
