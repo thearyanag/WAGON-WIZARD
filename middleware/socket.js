@@ -1,5 +1,5 @@
 const { WebSocketServer } = require("ws");
-const server = require('./server'); 
+const server = require('../server'); 
 const wss = new WebSocketServer({ server });
 
 wss.on("connection", function (ws) {
