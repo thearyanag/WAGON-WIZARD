@@ -6,7 +6,7 @@ const dotenv = require('dotenv').config()
 //Set up default mongoose connection
 var mongoDB = process.env.DATABASE_URI;
 mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
-
+console.log("Connection succesfullll");
 //Get the default connection
 var db = mongoose.connection;
 //Bind connection to error event (to get notification of connection errors)

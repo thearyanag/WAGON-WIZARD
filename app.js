@@ -24,15 +24,19 @@ const adminRouter = require('./adminModules/admin');
 const workshopRouter = require('./workshopModules/workshop');
 const { adminBro , adminBroRouter } = require('./adminModules/adminbro');
 
-port = 8000;
 heroku_port=process.env.PORT;
-
+console.log(heroku_port);
+const PORT = process.env.PORT || 3000;
+const ORIGIN=process.env.ORIGIN || `http://localhost:${PORT}`;
+console.log(PORT ,ORIGIN)
 app.use('/driver' , driverRouter);
 // app.use('/admin' , adminRouter);
 app.use('/workshop' , workshopRouter);
 app.use(adminBro.options.rootPath , adminBroRouter);
 
 app.get('/' , (req, res) => {
+  console.log('1');
   res.send('<h1>Hey ,  go and do some work</h1>')
 });
 
+module.exports = app;
