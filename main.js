@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const dotenv = require('dotenv').config()
 require('./db/connect');
+console.log(process.env.DATABASE_URI)
 //definig the express app
 const app = express();
 // adding Helmet to enhance API's security
