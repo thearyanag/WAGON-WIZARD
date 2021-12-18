@@ -1,5 +1,4 @@
-import mongoose from 'mongoose';
-
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const drive_location = new Schema({

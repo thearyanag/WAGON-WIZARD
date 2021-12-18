@@ -34,9 +34,10 @@ app.use('/driver' , driverRouter);
 app.use('/workshop' , workshopRouter);
 app.use(adminBro.options.rootPath , adminBroRouter);
 
-app.get('/' , (req, res) => {
+app.post('/' , (req, res) => {
   console.log('1');
   res.send('<h1>Hey ,  go and do some work</h1>')
+  console.log(req.body);
 });
 
 module.exports = app;

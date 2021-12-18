@@ -1,19 +1,24 @@
 const dotenv = require('dotenv').config()
+const bodyParser = require('body-parser');
+
+const jsonParser = bodyParser.json();
+
 const login = require('express').Router();
 
-const driver = require('../models/driverProfile');
 
+const driver = require('../models/driverProfile');
 const accountSid = process.env.twilioAccountSid;
 const authToken = process.env.twilioAuthToken;
 const client = require('twilio')(accountSid, authToken);
 const twilio_service_id=process.env.twilioServiceId;
 
-login.post('/number' ,async (req , res) => {
+login.post('/number' , jsonParser , async (req , res) => {
     const { number } = req.body; 
     var status; 
     function set(number) {
       status = number;
     }
+    console.log(req.body);
     await client.verify.services(twilio_service_id)
              .verifications
              .create({to: number, channel: 'sms'})

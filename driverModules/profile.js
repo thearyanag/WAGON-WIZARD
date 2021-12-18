@@ -15,6 +15,7 @@ profile.post('/personalInfo' , async (req , res) => {
         'dob' : dob,
         'tee_size' : tee_size
     };
+    console.log(req.body);
 
     query = {
         'transanction_hash' : transanction_hash

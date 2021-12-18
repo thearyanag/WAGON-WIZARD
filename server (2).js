@@ -15,18 +15,6 @@ const locationmodel = require("../../models/driverLocation");
 
 // wss.on("connection", handleConnection);
 let driver_id = null;
-const updateDriverLocation = async (driver_id, hash, location) => {
-  console.log("updated driver location:", driver_id, location);
-  //first find the driver
-  //if driver exits,then update location otherwise insert new location
-
-  locationmodel.findOneAndUpdate(
-    { driver_id, device_hash: hash },
-    { location }
-  );
-
-  return true;
-};
 
 wss.on("connection", function (ws) {
   ws.on("message", function (message) {
@@ -48,7 +36,7 @@ wss.on("connection", function (ws) {
         ws.close();
       } else if (update === "location") {
         const location = msg.location;
-        updateDriverLocation(driver_id, ws.id, location);
+        
       }
     }
 
