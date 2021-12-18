@@ -23,6 +23,23 @@ pickup.get('/getPickupData' , async (req , res) => {
     }).clone();
 });
 
+pickup.post('/requestCashPickup' , async(req , res) => {
+    const { transanction_hash , tripId} = req.body;
+
+    const query = {
+        'transanction_hash' : transanction_hash,
+        'trip_id' : tripId
+    };
+
+    tripDetails.findOne(query , function(err , doc) {
+        if(err) {
+            res.status(501).send(err);
+        } else {
+            res.status(200).send('Will be communicated');
+        }
+    }).clone();
+})
+
 pickup.get('/try' , async (req , res) => {
     key=process.env.GOOGLE_API_KEY;
 

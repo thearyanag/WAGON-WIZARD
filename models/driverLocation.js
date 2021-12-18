@@ -14,6 +14,10 @@ const drive_location = new Schema({
         type : [Number],
         required : true,
         default : [0.0,0.0] // [latitude,longitude]
+    },
+    status : {
+        type : String,
+        default : "available"
     }
 });
 

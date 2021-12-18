@@ -53,7 +53,21 @@ wss.on("connection", function (ws) {
 
       if(msg.dataType == "server") {
         const ip = ws._socket.remoteAddress
-        ws.send(ip);
+        
+        const trip = msg.trip;
+        const cordinates = trip.start.cordinates;
+        const drivers =0 ;// function to compute drivers';
+        const data = {
+          "dataType" : "update",
+          "update" : "trip",
+          "trip" : trip
+        };
+        
+        wss.clients.forEach(function each(client) {
+          if(client.id in drivers) {
+            client.send(data);
+          }
+      });
       }
 
 

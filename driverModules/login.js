@@ -1,6 +1,5 @@
 const dotenv = require('dotenv').config()
 const bodyParser = require('body-parser');
-
 const jsonParser = bodyParser.json();
 
 const login = require('express').Router();

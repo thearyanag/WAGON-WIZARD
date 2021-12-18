@@ -1,19 +1,11 @@
-const dotenv = require('dotenv').config();
-const axios = require('axios');
+const AWS = require('./middleware/aws');
+const s3 = new AWS.S3();
+const route = new AWS.Location({region: "ap-southeast-1"} );
+const reply = route.calculateRoute({
+    "Calculator" : "wagenwiz",
+    "DeparturePosition": [-122.7565,49.0021],
+    "DestinationPosition": [-122.3394, 47.6159]
+})
 
-key=process.env.GOOGLE_API_KEY;
 
-try {
-
-    const origin ="26.428554"+"%2C"+"80.332833";
-    const destination = "26.438543"+"%2C"+"80.334403";
-
-    const { data } = axios.get(
-        'https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}&destinations=${destination}&key=${key}'
-    )
-    console.log("hey");
-    console.log(typeofooo(data));
-} catch(err) {
-    console.log(err);
-}
-
+console.log(reply.response);

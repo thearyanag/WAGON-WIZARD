@@ -1,3 +1,6 @@
+const bodyParser = require('body-parser');
+const jsonParser = bodyParser.json();
+
 const profile = require('express').Router();
 const fileUpload = require('express-fileupload');
 
@@ -7,7 +10,11 @@ require('../middleware/aws');
 
 profile.use(fileUpload);
 
-profile.post('/personalInfo' , async (req , res) => {
+profile.get('/' , async(req , res) => {
+    res.send("okay");
+});
+
+profile.post('/personalInfo' , jsonParser , async (req , res) => {
     const { transanction_hash , name , mail , dob , tee_size } = req.body;
     const driverPersonal = {
         'name' : name,
@@ -44,7 +51,7 @@ profile.post('/uploadProfilePic' ,  async (req ,res) => {
         res.status(501).send(err);
     }
     
-    const s3 = new AWS.S3();
+    const s3 = new AWS.S3({region: "ap-south-1" });
 
     keyname = "profilepics/"+transanction_hash+".png";
 
@@ -78,6 +85,22 @@ profile.post('/uploadProfilePic' ,  async (req ,res) => {
     });
 
 });
+
+profile.post('/getPaymentHistory' , async(req , res) => {
+
+    const { transanction_hash } = req.body;
+
+    const trips = await driverProfile.find( {'transanction_hash' : transanction_hash} , function(err , doc){}).clone();
+    const totalPayment = 0;
+    const paymentHistory = [];
+
+    for(const trip of trips) {
+        paymentHistory.push({'tripId' : trip.trip_id , "payment" : trip.price});
+        totalPayment = totalPayment + trip.price;
+    }
+
+    res.status(200).send(paymentHistory , { 'totalPayment' : totalPayment });
+})
 
 profile.post('/getProfilePic' , async(req , res) => {
 
