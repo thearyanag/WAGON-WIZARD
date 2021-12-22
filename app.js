@@ -5,8 +5,12 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const dotenv = require('dotenv').config()
+<<<<<<< Updated upstream:app.js
 require('./db/connect');
 console.log(process.env.DATABASE_URI)
+=======
+// require('./db/connect');
+>>>>>>> Stashed changes:main.js
 //definig the express app
 const app = express();
 // adding Helmet to enhance API's security
