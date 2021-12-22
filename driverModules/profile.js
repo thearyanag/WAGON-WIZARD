@@ -1,6 +1,5 @@
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
-
 const profile = require('express').Router();
 const fileUpload = require('express-fileupload');
 
@@ -100,7 +99,7 @@ profile.post('/getPaymentHistory' , async(req , res) => {
     }
 
     res.status(200).send(paymentHistory , { 'totalPayment' : totalPayment });
-})
+});
 
 profile.post('/getProfilePic' , async(req , res) => {
 

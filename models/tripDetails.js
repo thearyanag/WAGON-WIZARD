@@ -8,6 +8,14 @@ const tripSchema = new mongoose.Schema({
     type : String,
     required : true
   },
+  drivers : { // all the driver's assigned to the trip
+    selected : {
+      type : String
+    },
+    assigned : {
+      type : [String]
+    }
+  },
   pickup_user : {
     user_type : {
       type : String,
