@@ -6,7 +6,7 @@ const fileUpload = require('express-fileupload');
 
 const driverProfile = require('../models/driverProfile');
 const path = require('path');
-require('../middleware/aws');
+const { AWS } = require('../middleware/aws');
 
 profile.use(fileUpload);
 
@@ -73,17 +73,26 @@ profile.post('/uploadProfilePic' ,  async (req ,res) => {
             'transanction_hash' : transanction_hash
         };
 
-        driverProfile.findOneAndUpdate(query , { profile_pic : data.Location }, function(err, doc) {
             if (err) return res.send(500, {error: err});
             res.send({
                 "response_code": 200,
                 "response_message": "Success",
                 "response_data": data
             }); 
-            }).clone().catch(function(err){ console.log(err)});
 
+        console.log(data)
+
+    //     driverProfile.findOneAndUpdate(query , { profile_pic : data.Location }, function(err, doc) {
+    //         if (err) return res.send(500, {error: err});
+    //         res.send({
+    //             "response_code": 200,
+    //             "response_message": "Success",
+    //             "response_data": data
+    //         }); 
+    //         }).clone().catch(function(err){ console.log(err)});
+
+    // });
     });
-
 });
 
 profile.post('/getPaymentHistory' , async(req , res) => {

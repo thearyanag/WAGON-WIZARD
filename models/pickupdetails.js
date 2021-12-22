@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const pickupSchema = new Schema({
+  tripId : {
+    type: String,
+    required : true
+  },
   additional_notes: {
     type: String
   },
@@ -14,11 +18,19 @@ const pickupSchema = new Schema({
         type : String
       }
     },
-    side: {
+    leftSide: {
       imageUrl: {
         type : String
       },
       rating: {
+        type : String
+      }
+    },
+    rightSide : {
+      imageUrl : {
+        type : String
+      },
+      rating : {
         type : String
       }
     },
@@ -28,6 +40,18 @@ const pickupSchema = new Schema({
       },
       rating: {
         type : String
+      }
+    },
+    interior: {
+      back : {
+        imageUrl: {
+          type: String
+        }  
+      },
+      front : {
+        imageUrl : {
+          type : String
+        }
       }
     },
     fuel_gaze: {
@@ -43,25 +67,21 @@ const pickupSchema = new Schema({
     rc: {
       imageUrl: {
         type : String,
-        required : true
       }
     },
     pollutionpaper: {
       imageUrl: {
         type : String,
-        required: true
       }
     },
     insurance: {
       imageUrl: {
         type : String,
-        required: true
       }
     },
   },
   inventory: {
     type: String,
-    required: true,
   },
 });
 
