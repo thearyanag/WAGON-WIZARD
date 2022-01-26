@@ -1,19 +1,15 @@
-const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
 const profile = require('express').Router();
-const fileUpload = require('express-fileupload');
 
 const driverProfile = require('../models/driverProfile');
 const path = require('path');
 const { AWS } = require('../middleware/aws');
 
-profile.use(fileUpload);
-
 profile.get('/' , async(req , res) => {
     res.send("okay");
 });
 
-profile.post('/personalInfo' , jsonParser , async (req , res) => {
+
+profile.post('/personalInfo' , async (req , res) => {
     const { transanction_hash , name , mail , dob , tee_size } = req.body;
     const driverPersonal = {
         'name' : name,
@@ -39,28 +35,37 @@ profile.post('/getPersonalInfo' , async (req,res) => {
     res.status(200).send(profile);
 });
 
+
 profile.post('/uploadProfilePic' ,  async (req ,res) => {
 
     try {
 
-    const { transanction_hash } = req.body;
-    const fileContent  = Buffer.from(req.files.profilepicture.data , 'binary');
+    var { transanction_hash } = req.body;
+    const { pp } = req.body;
+    var pp_content = Buffer.from(pp, 'base64'); 
 
     } catch (err) {
-        res.status(501).send(err);
+        console.log(502);
+        res.status(501).send(req.body);
+        console.log(503);
     }
     
-    const s3 = new AWS.S3({region: "ap-south-1" });
+    
 
-    keyname = "profilepics/"+transanction_hash+".png";
+    const s3 = new AWS.S3();
+
+    const keyname = "profilepics/"+"ARYAN"+".png";
+    console.log(keyname);
 
     // Setting up S3 upload parameters
     const params = {
         ACL : "public-read",
         Bucket: 'wagenwiz',
         Key: keyname, // File name you want to save as in S3
-        Body: fileContent 
+        Body: pp_content
     };
+
+    
 
     // Uploading files to the bucket
     await s3.upload(params, function(err, data) {
@@ -81,16 +86,6 @@ profile.post('/uploadProfilePic' ,  async (req ,res) => {
 
         console.log(data)
 
-    //     driverProfile.findOneAndUpdate(query , { profile_pic : data.Location }, function(err, doc) {
-    //         if (err) return res.send(500, {error: err});
-    //         res.send({
-    //             "response_code": 200,
-    //             "response_message": "Success",
-    //             "response_data": data
-    //         }); 
-    //         }).clone().catch(function(err){ console.log(err)});
-
-    // });
     });
 });
 

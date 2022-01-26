@@ -63,7 +63,7 @@ try {
     }
 });
 
-pickup.post('/postCarPics' , async (req , res) => {
+pickup.post('/postCarPics' , async (req ,  res) => {
     
     try {
         const { transanction_hash , tripId } = req.body;
