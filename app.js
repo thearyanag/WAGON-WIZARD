@@ -40,7 +40,7 @@ app.use(adminBro.options.rootPath , adminBroRouter);
 
 app.get('/' , (req, res) => {
   console.log('1');
-  res.send('<h1>Hey Nigga,  go and do some work</h1>')
+  res.status(200).send('<h1>Hey Nigga,  go and do some work</h1>')
   console.log(req.body);
 });
 

@@ -32,7 +32,7 @@ profile.post('/personalInfo' , async (req , res) => {
 profile.post('/getPersonalInfo' , async (req,res) => {
     const { transanction_hash } = req.body;
     const profile = await driverProfile.find({ 'transanction_hash' : transanction_hash } , function(err , doc){}).clone();
-    res.status(200).send(profile);
+    res.status(200).send(profile[0]);
 });
 
 
@@ -44,19 +44,16 @@ profile.post('/uploadProfilePic' ,  async (req ,res) => {
     const { pp } = req.body;
     var pp_content = Buffer.from(pp, 'base64'); 
 
+
     } catch (err) {
         console.log(502);
         res.status(501).send(req.body);
         console.log(503);
     }
-    
-    
 
     const s3 = new AWS.S3();
 
-    const keyname = "profilepics/"+"ARYAN"+".png";
-    console.log(keyname);
-
+    const keyname = "profilepics/"+transanction_hash+".png";
     // Setting up S3 upload parameters
     const params = {
         ACL : "public-read",
@@ -65,26 +62,24 @@ profile.post('/uploadProfilePic' ,  async (req ,res) => {
         Body: pp_content
     };
 
-    
-
     // Uploading files to the bucket
     await s3.upload(params, function(err, data) {
-        if (err) {
-            throw err;
-        }
+        if (err) return res.send(500, {error: err});
 
         query = {
             'transanction_hash' : transanction_hash
         };
 
-            if (err) return res.send(500, {error: err});
-            res.send({
-                "response_code": 200,
-                "response_message": "Success",
-                "response_data": data
-            }); 
+        update = {
+            'profile_pic' : {
+                'url' : data.Location
+            }
+        };
 
-        console.log(data)
+        driverProfile.findOneAndUpdate(query , update , function(err,doc) {
+            if (err) return res.send(500, {error: err});
+            return res.status(200).send('Succesfully saved.');  
+        }).clone().catch(function(err){ console.log(err)});
 
     });
 });
@@ -110,9 +105,38 @@ profile.post('/getProfilePic' , async(req , res) => {
     const { transanction_hash } = req.body;
     console.log(transanction_hash);
     const profile = await driverProfile.find({ 'transanction_hash' : transanction_hash } , function(err , doc){}).clone();
-    const { profile_pic } = profile;
+    const { profile_pic } = profile[0];
     res.status(200).send(profile_pic.url);
 
 });
+
+profile.post('/dailyCheckIn' , async (req , res) => {
+    const { transanction_hash , dailyCheck } = req.body;
+  
+    query = {
+      'transanction_hash' : transanction_hash
+    }
+    
+  
+    if(dailyCheck == true) {
+      await driverProfile.findOneAndUpdate(query , {'dailyCheck' : true} , function(err,doc) {
+        if (err) return res.send(500, {error: err});
+        return res.status(200).send('Updated');  
+    }).clone().catch(function(err){ console.log(err)});
+  
+    }
+  })
+  
+  profile.get('/getDailyCheck' , async(req , res) => {
+    const { transanction_hash } = req.body;
+  
+    const profile = await driverProfile.find({ 'transanction_hash' : transanction_hash } , function(err , doc){}).clone();
+    const { dailyCheck } = profile[0];
+    console.log(profile)
+    console.log(dailyCheck)
+    return res.status(200).send({'dailyCheckIn' : dailyCheck});
+  })
+  
+
 
 module.exports = profile;

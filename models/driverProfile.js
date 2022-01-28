@@ -45,6 +45,10 @@ const driver_profile = new Schema({
     dob : {
         type : Date,
         max : getDate()
+    },
+    dailyCheck : {
+        type : Boolean,
+        default : false
     }
 });
 
