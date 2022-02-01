@@ -97,6 +97,16 @@ profile.post('/updateKYCDocs' , async(req , res) => {
     const pan_content = Buffer.from(pan_card , 'base64');
     const driving_content = Buffer.from(driving_license , 'base64');
     const residential_content = Buffer.from(residential_proof , 'base64');
+
+    const docs = ["aadhar" , "pan" , "driving_license" , "residential_proof"];
+    const docs_buffer = [aadhar_content , pan_content , driving_content , residential_content];
+    const docsurl = {};
+
+    for (let i=0 ; i < 4 ; i++) {
+        keyname = "kycdocs/" + transanction_hash + "/"+docs[i] + ".png";    
+        docsurl[docs[i]] = await AWSUpload(keyname , docs_buffer[i] );
+    }
+    res.status(200).send(JSON.stringify(docsurl));
 })
 
 profile.post('/getPaymentHistory' , async(req , res) => {
