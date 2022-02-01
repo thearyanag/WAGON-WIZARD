@@ -48,6 +48,7 @@ pickup.post('/postCarPics' , async (req ,  res) => {
     
     try {
         const { transanction_hash , tripId } = req.body;
+        // const { front , back , leftSide , rightSide ,  }
         const fileContent  = req.files 
         const front = fileContent.front
         const back = fileContent.back

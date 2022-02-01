@@ -1,13 +1,29 @@
 const profile = require('express').Router();
 
 const driverProfile = require('../models/driverProfile');
+// const driverLocation
 const path = require('path');
 const { AWS } = require('../middleware/aws');
 
-profile.get('/' , async(req , res) => {
-    res.send("okay");
-});
+const AWSUpload = async (keyname , File) => {
 
+    const s3 = new AWS.S3;
+    const params = {
+        ACL : "public-read",
+        Bucket: 'wagenwiz',
+        Key: keyname, // File name you want to save as in S3
+        Body: File
+    };
+
+    const result = await s3.upload(params, function(err, data) {
+        if(err) 
+        { 
+            return err;
+        }
+    }).promise();
+    return result.Location;
+
+}
 
 profile.post('/personalInfo' , async (req , res) => {
     const { transanction_hash , name , mail , dob , tee_size } = req.body;
@@ -51,28 +67,18 @@ profile.post('/uploadProfilePic' ,  async (req ,res) => {
         console.log(503);
     }
 
-    const s3 = new AWS.S3();
 
     const keyname = "profilepics/"+transanction_hash+".png";
     // Setting up S3 upload parameters
-    const params = {
-        ACL : "public-read",
-        Bucket: 'wagenwiz',
-        Key: keyname, // File name you want to save as in S3
-        Body: pp_content
-    };
-
-    // Uploading files to the bucket
-    await s3.upload(params, function(err, data) {
-        if (err) return res.send(500, {error: err});
-
+    var result = await AWSUpload(keyname , pp_content);
+    console.log("result"+result);
         query = {
             'transanction_hash' : transanction_hash
         };
 
         update = {
             'profile_pic' : {
-                'url' : data.Location
+                'url' : result
             }
         };
 
@@ -81,8 +87,17 @@ profile.post('/uploadProfilePic' ,  async (req ,res) => {
             return res.status(200).send('Succesfully saved.');  
         }).clone().catch(function(err){ console.log(err)});
 
-    });
 });
+
+profile.post('/updateKYCDocs' , async(req , res) => {
+    const { transanction_hash } = req.body;
+
+    const { aadhar_card , pan_card , driving_license , residential_proof } = req.body;
+    const aadhar_content = Buffer.from(aadhar_card , 'base64');
+    const pan_content = Buffer.from(pan_card , 'base64');
+    const driving_content = Buffer.from(driving_license , 'base64');
+    const residential_content = Buffer.from(residential_proof , 'base64');
+})
 
 profile.post('/getPaymentHistory' , async(req , res) => {
 
@@ -117,7 +132,6 @@ profile.post('/dailyCheckIn' , async (req , res) => {
       'transanction_hash' : transanction_hash
     }
     
-  
     if(dailyCheck == true) {
       await driverProfile.findOneAndUpdate(query , {'dailyCheck' : true} , function(err,doc) {
         if (err) return res.send(500, {error: err});
@@ -137,6 +151,10 @@ profile.post('/dailyCheckIn' , async (req , res) => {
     return res.status(200).send({'dailyCheckIn' : dailyCheck});
   })
   
+profile.post('/getStatus' , async(req , res) => {
+    const { transanction_hash } = req.body;
+    driver
+})
 
 
 module.exports = profile;

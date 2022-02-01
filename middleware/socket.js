@@ -4,7 +4,7 @@ const wss = new WebSocketServer({ server  , path: "/updates"});
 
 const driverLocation = require('../models/driverLocation');
 
-const updateDriverLocation = async (driver_id, device_hash, location , ws) => {
+const updateDriverLocation = async (driver_id, location , ws) => {
   console.log("updated driver location:", driver_id, location);
   //first find the driver
   //if driver exits,then update location otherwise insert new location
@@ -22,6 +22,23 @@ const updateDriverLocation = async (driver_id, device_hash, location , ws) => {
   return true;
 };
 
+const updateDriverStatus = async (transanction_hash , status , ws) => {
+  const query = {
+    'driver_id' : transanction_hash
+  }
+  console.log(transanction_hash);
+
+  const update = {
+    'status' : status
+  }
+
+    await driverLocation.findOneAndUpdate( query , update , {upsert : true}, function(err, doc) {
+      if (err) return ws.send(500, {error: err});
+      console.log(doc);
+      return ws.send(JSON.stringify({'response_code' : 200 , 'response_status' : 'updated'}));  
+  }).clone().catch(function(err){ ws.send(JSON.stringify({'response_code' : 501 , 'response_status' : 'Server Error'}))});
+
+}
 
 wss.on("connection", function (ws) {
     
@@ -34,20 +51,29 @@ wss.on("connection", function (ws) {
       if(msg.dataType == "new") {
         hash = msg.transanction_hash;
         ws.id = hash;
-        ws.send("200");  
+        const status = "online";
+        updateDriverStatus(hash , status , ws); // hash is the driver id , hash is given to each ws connection
+ 
       }
 
       if(msg.dataType == "update") {
         update = msg.update;
         console.log(update);
         if(update == "exit") {
-            ws.close();
+           const status = "offline";
+           updateDriverStatus(ws.id , status , ws); // hash is the driver id , hash is given to each ws connection
+           ws.close();
         } else if(update == "location") {
           driver_id = ws.id;        
           const location = msg.location;
           const [lat,lang] = location;
           console.log(hash,lat,lang);
-          updateDriverLocation(driver_id, ws.id, location , ws);
+          updateDriverLocation(driver_id, location , ws);
+        }
+        else if(update == "status") {
+          const driver_id = ws.id;
+          const status = msg.status;
+          updateDriverStatus(driver_id , status , ws);
         }
       }
 

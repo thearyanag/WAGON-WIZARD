@@ -49,6 +49,10 @@ const driver_profile = new Schema({
     dailyCheck : {
         type : Boolean,
         default : false
+    },
+    tripId : {
+        type : String,
+        
     }
 });
 
