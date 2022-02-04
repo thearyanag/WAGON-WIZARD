@@ -6,7 +6,7 @@ const profileRouter = require('./profile');
 
 driver.use('/authenticate' , loginRouter);
 driver.use('/profile' , profileRouter);
-driver.use('/pickupScreen' , pickupRouter);
+driver.use('/pickup' , pickupRouter);
 
 module.exports = driver;
 

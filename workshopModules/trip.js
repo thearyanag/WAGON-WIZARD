@@ -7,14 +7,16 @@ tripRouter.post('/new' , async (req , res) => {
  
     const { workshop_id , user_id , mobile_number , vehicle , end } = req.body;
  
-    const workshop = workshopDetails.findOne({'workshop_id' : workshop_id} , function (err,doc) {
+    const workshop = await workshopDetails.findOne({'workshop_id' : workshop_id} , function (err,doc) {
         if(err) {
             res.status(501).send(err);
         }
+        console.log(doc);
     }).clone();
 
     const workshopLocation = workshop.location;
     const workshopName = workshop.name;
+    console.log(workshop)
 
     function makeid(length) {
         var result           = '';

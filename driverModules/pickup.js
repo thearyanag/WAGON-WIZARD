@@ -1,4 +1,4 @@
-const axios = require('axios');
+    const axios = require('axios');
 const pickup = require('express').Router();
 
 const fileUpload = require('express-fileupload');
@@ -11,18 +11,40 @@ pickup.get('/' , async (req , res) => {
     res.status(200).send('Bella Ciao !');
 }); 
 
-pickup.get('/getPickupData' , async (req , res) => {
+pickup.get('/allPickupData' , async (req , res) => {
     const { transanction_hash } = req.body;
 
     query = { 'user_id' : transanction_hash };
 
-    tripDetails.findOne(query , function (err , doc) {
+    const result = tripDetails.find(query , function (err , doc) {
         if(err) {
             res.status(501).send(err);
         } else {
             res.status(200).send(doc);
         }
     }).clone();
+
+    res.status(200).send(result);
+});
+
+
+pickup.get('/pickupData' , async (req , res) => {
+    const { transanction_hash , tripId } = req.body;
+
+    query = { 
+        'user_id' : transanction_hash ,
+        'trip_id' : tripId
+    };
+
+    const result = tripDetails.find(query , function (err , doc) {
+        if(err) {
+            res.status(501).send(err);
+        } else {
+            res.status(200).send(doc);
+        }
+    }).clone();
+
+    res.status(200).send(result);
 });
 
 pickup.post('/requestCashPickup' , async(req , res) => {
@@ -42,6 +64,26 @@ pickup.post('/requestCashPickup' , async(req , res) => {
     }).clone();
 })
 
+pickup.post('/rateTrip' , async(req , res) => {
+
+    const { transanction_hash , tripId , rating } = req.body;
+
+    query = {
+        'drivers' : {
+            'assigned' : transanction_hash
+        },
+        'trip_id' : tripId,   
+    }
+
+    update = {
+        'ratingByDriver' : rating
+    }
+
+    tripDetails.findOneAndUpdate(await query , update , function(err,doc) {
+        if(err) return res.send(500 , {'error' : err});
+        return res.status(200).send('Updated');
+    }).clone().catch(function(err){ console.log(err)});
+});
 
 
 pickup.post('/postCarPics' , async (req ,  res) => {

@@ -34,7 +34,7 @@ const PORT = process.env.PORT || 3000;
 const ORIGIN=process.env.ORIGIN || `http://localhost:${PORT}`;
 console.log(PORT ,ORIGIN)
 app.use('/driver' , driverRouter);
-// app.use('/admin' , adminRouter);
+app.use('/admin' , adminRouter);
 app.use('/workshop' , workshopRouter);
 app.use(adminBro.options.rootPath , adminBroRouter);
 

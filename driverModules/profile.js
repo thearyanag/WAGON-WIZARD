@@ -1,7 +1,7 @@
 const profile = require('express').Router();
 
 const driverProfile = require('../models/driverProfile');
-// const driverLocation
+const driverLocation = require('../models/driverLocation');
 const path = require('path');
 const { AWS } = require('../middleware/aws');
 
@@ -40,7 +40,7 @@ profile.post('/personalInfo' , async (req , res) => {
     };
 
     await driverProfile.findOneAndUpdate( await query , driverPersonal , function(err, doc) {
-        if (err) return res.send(500, {error: err});
+        if (err) return res.send(500, {'error': err});
         return res.status(200).send('Succesfully saved.');  
     }).clone().catch(function(err){ console.log(err)});
 });
@@ -92,14 +92,16 @@ profile.post('/uploadProfilePic' ,  async (req ,res) => {
 profile.post('/updateKYCDocs' , async(req , res) => {
     const { transanction_hash } = req.body;
 
-    const { aadhar_card , pan_card , driving_license , residential_proof } = req.body;
-    const aadhar_content = Buffer.from(aadhar_card , 'base64');
+    const { aadhar_card_front , aadhar_card_back , pan_card , driving_license_front , driving_license_back , residential_proof } = req.body;
+    const aadhar_cont_front = Buffer.from(aadhar_card_front , 'base64');
+    const aadhar_cont_back = Buffer.from(aadhar_card_back , 'base64');
     const pan_content = Buffer.from(pan_card , 'base64');
-    const driving_content = Buffer.from(driving_license , 'base64');
+    const driving_cont_front = Buffer.from(driving_license_front , 'base64');
+    const driving_cont_back = Buffer.from(driving_license_back , 'base64');
     const residential_content = Buffer.from(residential_proof , 'base64');
 
-    const docs = ["aadhar" , "pan" , "driving_license" , "residential_proof"];
-    const docs_buffer = [aadhar_content , pan_content , driving_content , residential_content];
+    const docs = ["aadhar_front" , "aadhar_back" , "pan" , "driving_license_front" , "driving_license_back" , "residential_proof"];
+    const docs_buffer = [aadhar_cont_front , aadhar_cont_back , pan_content , driving_cont_front , driving_cont_back , residential_content];
     const docsurl = {};
 
     for (let i=0 ; i < 4 ; i++) {
@@ -107,7 +109,7 @@ profile.post('/updateKYCDocs' , async(req , res) => {
         docsurl[docs[i]] = await AWSUpload(keyname , docs_buffer[i] );
     }
     res.status(200).send(JSON.stringify(docsurl));
-})
+});
 
 profile.post('/getPaymentHistory' , async(req , res) => {
 
@@ -160,11 +162,27 @@ profile.post('/dailyCheckIn' , async (req , res) => {
     console.log(dailyCheck)
     return res.status(200).send({'dailyCheckIn' : dailyCheck});
   })
+
   
 profile.post('/getStatus' , async(req , res) => {
     const { transanction_hash } = req.body;
-    driver
-})
+
+    query = {
+        "driver_id" : transanction_hash
+    }
+
+    driverLocation.findOne(await query ,  function(err, doc) {
+        if (err) return res.send(500, {error: err});
+        return res.status(200).send(doc.status);  
+    }).clone().catch(function(err){ console.log(err)});
+});
+
+profile.post('/idcard' , async(req , res) => {
+
+    // const 
+
+});
+
 
 
 module.exports = profile;

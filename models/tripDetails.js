@@ -78,7 +78,6 @@ const tripSchema = new mongoose.Schema({
   },
   distanceToTravel : {
     type: Number,
-    required: true,
   },
   speed: {
     type: Number,
@@ -86,8 +85,13 @@ const tripSchema = new mongoose.Schema({
   performanceRating: {
     type: Number,
   },
+  ratingByDriver : {
+    type : Number,
+    default : 3
+  },
   ratingByWorkshop: {
     type: Number,
+    default : 3
   },
   pickupDetail : {
     type : ObjectID,
