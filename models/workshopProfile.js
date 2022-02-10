@@ -10,6 +10,9 @@ const workshop_details = new Schema({
         type : String,
         required : true
     },
+    profile_pic : {
+        url : String
+    },
     contact : {
         mobile_number : {
             type : Number,
