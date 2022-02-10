@@ -38,6 +38,20 @@ const workshop_details = new Schema({
         type : Date,
         required : true
     },
+    documents: {
+    service_center_incorporation_certifiacte: {
+      url: String,
+    },
+    address_proof: {
+      url: String,
+    },
+    gstin: {
+      url: String,
+    },
+    identity_proof: {
+      url: String,
+    },
+  },
     workshop_rating : {
         type : Number,
         default : 3
