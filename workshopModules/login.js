@@ -1,6 +1,6 @@
 const dotenv = require("dotenv").config();
 
-const workshoplogin = require("express").Router();
+const login = require("express").Router();
 
 const workshop = require("../models/workshopProfile");
 const accountSid = process.env.twilioAccountSid;
@@ -8,7 +8,7 @@ const authToken = process.env.twilioAuthToken;
 const client = require("twilio")(accountSid, authToken);
 const twilio_service_id = process.env.twilioServiceId;
 
-workshoplogin.post("/number", async (req, res) => {
+login.post("/number", async (req, res) => {
   const { number } = req.body;
   var status;
   function set(number) {
@@ -26,7 +26,7 @@ workshoplogin.post("/number", async (req, res) => {
   }
 });
 
-workshoplogin.post("/verifyOtp", async (req, res) => {
+login.post("/verifyOtp", async (req, res) => {
   const { number, otp } = req.body;
 
   var status;
@@ -68,4 +68,4 @@ workshoplogin.post("/verifyOtp", async (req, res) => {
   }
 });
 
-module.exports = workshoplogin;
+module.exports = login;

@@ -1,11 +1,11 @@
-const tripRouter = require('express').Router();
+const trip = require('express').Router();
 
 const workshopDetails = require('../models/workshopProfile');
 const tripDetails = require('../models/tripDetails');
 const pickupDetails = require("../models/pickupdetails");
 
 
-tripRouter.post('/new' , async (req , res) => {
+trip.post('/new' , async (req , res) => {
  
     const { workshop_id , user_id , mobile_number , vehicle , end } = req.body;
  
@@ -109,4 +109,4 @@ trip.post("/viewStatus", async (req, res) => {
   
 trip.post("/")
 
-module.exports = tripRouter;
+module.exports = trip;
