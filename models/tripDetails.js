@@ -4,9 +4,10 @@ const pickupDetails = require('./pickupdetails')
 const  ObjectID = require('mongodb').ObjectId;
 
 const tripSchema = new mongoose.Schema({
-  trip_id : {
+  tripId : {
     type : String,
-    required : true
+    required : true,
+    unique : true
   },
   drivers : { // all the driver's assigned to the trip
     selected : {
@@ -16,7 +17,31 @@ const tripSchema = new mongoose.Schema({
       type : [String]
     }
   },
+  created_user : {
+    user_type : {
+      type : String,
+      required : true
+    },
+    user_id : {
+      type : String,
+      required : true
+    }
+  },
   pickup_user : {
+    user_type : {
+      type : String,
+      required : true
+    },
+    user_id : {
+      type : String,
+      required : true
+    },
+    contact : {
+      type : Number,
+      required : true
+    }
+  },
+  drop_user : {
     user_type : {
       type : String,
       required : true

@@ -3,6 +3,38 @@ const server = require('../server');
 const wss = new WebSocketServer({ server  , path: "/updates"});
 
 const driverLocation = require('../models/driverLocation');
+const routeTaken = require('../models/route')
+
+const updateTripLocation = async (trip_id , location , ws) => {
+  const query = {
+    'tripId' : trip_id
+  }
+
+  const route = routeTaken.findOne(query , function(err,doc) {
+    if(err) ws.send(500 , {'error' : err})
+  });
+
+  if(route) {
+    const { path } = route;
+    path.push(location);
+    var update = {
+      'path' : path
+    };
+    routeTaken.findOneAndUpdate(await query , update , function(err,doc) {
+      if(err) return ws.send(501 , {'error' : err})
+      return ws.send(JSON.stringify({'response_code' : 200 , 'response_status' : updated}));
+    })
+  } else {
+    var newRoute = new routeTaken({
+      'tripId' : tripId,
+      'path' : [location]
+    })
+    newRoute.save(function(err,doc) {
+      if(err) return ws.send(500 , {'error' : err});
+      return ws.send(200 , "updated")
+    })
+  }
+}
 
 const updateDriverLocation = async (driver_id, location , ws) => {
   console.log("updated driver location:", driver_id, location);
@@ -74,6 +106,10 @@ wss.on("connection", function (ws) {
           const driver_id = ws.id;
           const status = msg.status;
           updateDriverStatus(driver_id , status , ws);
+        } else if(update == "intriplocation") {
+          const driver_id = ws.id;
+          const location = msg.location;
+          updateTripLocation(driver_id , location , ws);
         }
       }
 
@@ -94,6 +130,10 @@ wss.on("connection", function (ws) {
             client.send(data);
           }
       });
+      }
+
+      if(msg.dataType == "workshop") {
+        
       }
 
 

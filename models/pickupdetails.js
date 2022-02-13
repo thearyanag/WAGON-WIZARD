@@ -2,86 +2,143 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const pickupSchema = new Schema({
-  tripId : {
+
+  tripId: {
     type: String,
-    required : true
+    required: true,
+    unique : true
   },
+
+  transanction_hash: {
+    type: String,
+    required: true
+  },
+
   additional_notes: {
     type: String
   },
+
   condition: {
     front: {
-      imageUrl: {
-        type : String
+      bumper: {
+        type: String
       },
-      rating: {
-        type : String
-      }
-    },
-    leftSide: {
-      imageUrl: {
-        type : String
+      glass: {
+        type: String
       },
-      rating: {
-        type : String
-      }
-    },
-    rightSide : {
-      imageUrl : {
-        type : String
+      lshoulder: {
+        type: String
       },
-      rating : {
-        type : String
+      rshoulder: {
+        type: String
       }
     },
     back: {
-      imageUrl: {
-        type : String
+      bumper: {
+        type: String
       },
-      rating: {
-        type : String
+      glass: {
+        type: String
+      },
+      lshoulder: {
+        type: String
+      },
+      rshoulder: {
+        type: String
+      }
+    },
+    side: {
+      lf_door: {
+        type: String
+      },
+      rf_door: {
+        type: String
+      },
+      lb_door: {
+        type: String
+      },
+      rb_door: {
+        type: String
       }
     },
     interior: {
-      back : {
-        imageUrl: {
-          type: String
-        }  
+      dashboard: {
+        type: String
       },
-      front : {
-        imageUrl : {
-          type : String
-        }
-      }
-    },
-    fuel_gaze: {
-      imageUrl: {
-        type : String
+      glovebox: {
+        type: String
+      },
+      gearknob: {
+        type: String
+      },
+      trunk: {
+        type: String
+      },
+      backseat: {
+        type: String
+      },
+      frontseat: {
+        type: String
       }
     },
     overall_comments: {
       type: String
+    },
+    overall_picture: {
+      type: String
+    },
+  },
+  rating: {
+    front: {
+      type: Number
+    },
+    back: {
+      type: Number
+    },
+    side: {
+      type: Number
+    },
+    interior: {
+      type: Number
     }
   },
   ownershipDetails: {
     rc: {
-      imageUrl: {
-        type : String,
-      }
+      type: String
     },
     pollutionpaper: {
-      imageUrl: {
-        type : String,
-      }
+      type: String,
     },
     insurance: {
-      imageUrl: {
-        type : String,
-      }
+      type: String,
     },
   },
-  inventory: {
-    type: String,
+  job_sheet : {
+    type : [String]
+  },
+  inventory_sheet: {
+    check_sheet : {
+      stereo : {
+        type : [String]
+      },
+      car : {
+        type : [String]
+      },
+      vanity : {
+        type : [String]
+      }
+    },
+    fuelGaze : {
+      image : {
+        type : String
+      },
+      level : {
+        type : String
+      }
+    },
+    stepney : {
+      type : String
+    }
   },
 });
 

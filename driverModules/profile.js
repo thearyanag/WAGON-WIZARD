@@ -22,7 +22,6 @@ const AWSUpload = async (keyname , File) => {
         }
     }).promise();
     return result.Location;
-
 }
 
 profile.post('/personalInfo' , async (req , res) => {
@@ -175,12 +174,6 @@ profile.post('/getStatus' , async(req , res) => {
         if (err) return res.send(500, {error: err});
         return res.status(200).send(doc.status);  
     }).clone().catch(function(err){ console.log(err)});
-});
-
-profile.post('/idcard' , async(req , res) => {
-
-    // const 
-
 });
 
 

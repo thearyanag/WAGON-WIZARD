@@ -26,10 +26,6 @@ workshoplogin.post("/number", async (req, res) => {
   }
 });
 
-workshoplogin.get("/", (req, res) => {
-  res.send("working");
-});
-
 workshoplogin.post("/verifyOtp", async (req, res) => {
   const { number, otp } = req.body;
 
@@ -49,12 +45,13 @@ workshoplogin.post("/verifyOtp", async (req, res) => {
     return result;
   }
 
-  await client.verify
-    .services(twilio_service_id)
-    .verificationChecks.create({ to: number, code: otp })
-    .then((verification_check) => set(verification_check.status));
+    await client.verify.services(twilio_service_id)
+    .verificationChecks
+    .create({to: number, code: otp})
+    .then(verification_check => set(verification_check.status));
+
   if (status == "approved") {
-    hash = makeid(14);
+    hash = "WOR"+makeid(12);
 
     const workshop1 = new workshop({
       workshop_id: hash,

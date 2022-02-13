@@ -1,23 +1,41 @@
-    const axios = require('axios');
+const axios = require('axios');
 const pickup = require('express').Router();
 
 const fileUpload = require('express-fileupload');
-require('../middleware/aws');
+const { AWS } = require('../middleware/aws');
 
 const tripDetails = require('../models/tripDetails');
 const pickupDetails = require('../models/pickupdetails');
 
-pickup.get('/' , async (req , res) => {
-    res.status(200).send('Bella Ciao !');
-}); 
+const AWSUpload = async (keyname, File) => {
 
-pickup.get('/allPickupData' , async (req , res) => {
+    const s3 = new AWS.S3;
+    const params = {
+        ACL: "public-read",
+        Bucket: 'wagenwiz',
+        Key: keyname, // File name you want to save as in S3
+        Body: File
+    };
+
+    const result = await s3.upload(params, function (err, data) {
+        if (err) {
+            return err;
+        }
+    }).promise();
+    return result.Location;
+}
+
+pickup.get('/', async (req, res) => {
+    res.status(200).send('Bella Ciao !');
+});
+
+pickup.get('/allPickupData', async (req, res) => {
     const { transanction_hash } = req.body;
 
-    query = { 'user_id' : transanction_hash };
+    query = { 'user_id': transanction_hash };
 
-    const result = tripDetails.find(query , function (err , doc) {
-        if(err) {
+    const result = tripDetails.find(query, function (err, doc) {
+        if (err) {
             res.status(501).send(err);
         } else {
             res.status(200).send(doc);
@@ -28,16 +46,16 @@ pickup.get('/allPickupData' , async (req , res) => {
 });
 
 
-pickup.get('/pickupData' , async (req , res) => {
-    const { transanction_hash , tripId } = req.body;
+pickup.get('/pickupData', async (req, res) => {
+    const { transanction_hash, tripId } = req.body;
 
-    query = { 
-        'user_id' : transanction_hash ,
-        'trip_id' : tripId
+    query = {
+        'user_id': transanction_hash,
+        'trip_id': tripId
     };
 
-    const result = tripDetails.find(query , function (err , doc) {
-        if(err) {
+    const result = tripDetails.find(query, function (err, doc) {
+        if (err) {
             res.status(501).send(err);
         } else {
             res.status(200).send(doc);
@@ -47,16 +65,16 @@ pickup.get('/pickupData' , async (req , res) => {
     res.status(200).send(result);
 });
 
-pickup.post('/requestCashPickup' , async(req , res) => {
-    const { transanction_hash , tripId} = req.body;
+pickup.post('/requestCashPickup', async (req, res) => {
+    const { transanction_hash, tripId } = req.body;
 
     const query = {
-        'transanction_hash' : transanction_hash,
-        'trip_id' : tripId
+        'transanction_hash': transanction_hash,
+        'trip_id': tripId
     };
 
-    tripDetails.findOne(query , function(err , doc) {
-        if(err) {
+    tripDetails.findOne(query, function (err, doc) {
+        if (err) {
             res.status(501).send(err);
         } else {
             res.status(200).send('Will be communicated');
@@ -64,100 +82,136 @@ pickup.post('/requestCashPickup' , async(req , res) => {
     }).clone();
 })
 
-pickup.post('/rateTrip' , async(req , res) => {
+pickup.post('/rateTrip', async (req, res) => {
 
-    const { transanction_hash , tripId , rating } = req.body;
+    const { transanction_hash, tripId, rating } = req.body;
 
     query = {
-        'drivers' : {
-            'assigned' : transanction_hash
+        'drivers': {
+            'assigned': transanction_hash
         },
-        'trip_id' : tripId,   
+        'trip_id': tripId,
     }
 
     update = {
-        'ratingByDriver' : rating
+        'ratingByDriver': rating
     }
 
-    tripDetails.findOneAndUpdate(await query , update , function(err,doc) {
-        if(err) return res.send(500 , {'error' : err});
+    tripDetails.findOneAndUpdate(await query, update, function (err, doc) {
+        if (err) return res.send(500, { 'error': err });
         return res.status(200).send('Updated');
-    }).clone().catch(function(err){ console.log(err)});
+    }).clone().catch(function (err) { console.log(err) });
 });
 
 
-pickup.post('/postCarPics' , async (req ,  res) => {
-    
-    try {
-        const { transanction_hash , tripId } = req.body;
-        // const { front , back , leftSide , rightSide ,  }
-        const fileContent  = req.files 
-        const front = fileContent.front
-        const back = fileContent.back
-        const leftSide = fileContent.leftSide
-        const rightSide = fileContent.rightSide
-        const interior1 = fileContent.frontInterior
-        const interior2 = fileContent.backInterior
-        const fuelGaze = fileContent.fuelGaze
-        } catch (err) {
-            res.status(501).send(err);
-        }
+pickup.post('/postCarPics', async (req, res) => {
 
-        const condition = ["front" , "back" , "leftSide" , "rightSide" , "frontInterior" , "backInterior" , "fuelGaze"]; 
-        function getDate() {
-            var today = new Date();
-            var dd = String(today.getDate()).padStart(2, '0');
-            var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-            var yyyy = today.getFullYear();
-            today = yyyy +'-' + mm + '-' + dd;
-            return today;
-        }
-        const s3 = new AWS.S3();
-        for(let i=0 ; i<7 ; i++) {
-            keyname = "condition/"+"transanction_hash/"+getDate()+"/"+condition[i]+".png";
+    const { transanction_hash, tripId, fbumper , fglass , flshoulder , frshoulder , bbumper , bglass , brshoulder , blshoulder , lf_door , rf_door , lb_door , rb_door , dash , gearknob , trunk , glovebox , backseat , frontseat , overall_picture , overall_comments} = req.body;
 
-            const params = {
-                ACL : "public-read",
-                Bucket : 'wagenwiz',
-                
+    const front_bumper = Buffer.from(fbumper, 'base64');
+    const front_glass = Buffer.from(fglass, 'base64');
+    const front_lshoulder = Buffer.from(flshoulder, 'base64');
+    const front_rshoulder = Buffer.from(frshoulder, 'base64');
+
+    const back_bumper = Buffer.from(bbumper, 'base64');
+    const back_glass = Buffer.from(bglass, 'base64');
+    const back_lshoulder = Buffer.from(blshoulder, 'base64');
+    const back_rshoulder = Buffer.from(brshoulder, 'base64');
+
+    const lfdoor = Buffer.from(lf_door, 'base64');
+    const rfdoor = Buffer.from(rf_door, 'base64');
+    const lbdoor = Buffer.from(lb_door, 'base64');
+    const rbdoor = Buffer.from(rb_door, 'base64');
+
+    const in_dash = Buffer.from(dash, 'base64');
+    const in_gearknob = Buffer.from(gearknob, 'base64');
+    const in_trunk = Buffer.from(trunk, 'base64');
+    const in_glovebox = Buffer.from(glovebox, 'base64');
+    const in_backseat = Buffer.from(backseat, 'base64');
+    const in_frontseat = Buffer.from(frontseat, 'base64');
+
+    const condition = ["front_bumper", "front_glass", "front_lshoulder", "front_rshoulder", "back_bumper", "back_glass", "back_lshoulder", "back_rshoulder", "lf_door", "rf_door", "lb_door", "rb_door", "dash", "glovebox", "gearknob", "trunk", "backseat", "frontseat"];
+    const condition_buffer = [front_bumper, front_glass, front_lshoulder, front_rshoulder, back_bumper, back_glass, back_lshoulder, back_rshoulder, lfdoor, rfdoor, lbdoor, rbdoor, in_dash, in_glovebox, in_gearknob, in_trunk, in_backseat, in_frontseat];
+    var condition_url = {};
+
+    var upload = 18;
+
+    if (overall_picture) {
+        const overall_pic = Buffer.from(overall_picture, 'base64');
+        condition.push("overall_picture");
+        condition_buffer.push(overall_pic);
+        upload = upload + 1;
+    }
+
+    console.log(upload);
+
+    for (let i = 0; i < upload; i++) {
+        keyname = "trips/" + tripId + "/" + condition[i] + ".png";
+        content = condition_buffer[i];
+        var url = await AWSUpload(keyname, content);
+        condition_url[condition[i]] = url;
+    }
+
+     const pickupObject={
+        'transanction_hash': transanction_hash,
+        'tripId': tripId,
+        'condition': {
+            'front': {
+                'bumper': condition_url["front_bumper"],
+                'glass': condition_url["front_glass"],
+                'lshoulder': condition_url["front_lshoulder"],
+                'rshoulder': condition_url["front_rshoulder"]
+            },
+            'back': {
+                'bumper': condition_url["back_bumper"],
+                'glass': condition_url["back_glass"],
+                'lshoulder': condition_url["back_lshoulder"],
+                'rshoulder': condition_url["back_rshoulder"]
+            },
+            'side': {
+                'lf_door': condition_url["lf_door"],
+                'rf_door': condition_url["rf_door"],
+                'lb_door': condition_url["lb_door"],
+                'rb_door': condition_url["rb_door"]
+            },
+            'interior': {
+                'dashboard': condition_url["dash"],
+                'glovebox': condition_url["glovebox"],
+                'gearknob': condition_url["gearknob"],
+                'trunk': condition_url["trunk"],
+                'backseat': condition_url["backseat"],
+                'frontseat': condition_url["frontseat"]
             }
         }
+    }
+
+    if (overall_comments) {
+        update['condition'].push({ 'overall_comments': overall_comments });
+    }
+
+    const pickup =new pickupDetails(pickupObject);
+
+    const query = {
+        'tripId' : tripId,
+        'drivers' : {
+            'selected' : transanction_hash 
+        }
+    }; 
+
+    const update = {
+        'pickupDetail' : pickup
+    };
+
+    tripDetails.findOneAndUpdate(await query , update , function(err,doc) {
+        if(err) res.status.send({'err' : err});
+    });
+
+    await pickup.save(function(err,doc) {
+        if(err) res.status(501).send({'err' : err})
+        res.status(200).send("Uploaded Successfully");
+    });
 
 
-        keyname = "profilepics/"+transanction_hash+".png";
-    
-        // Setting up S3 upload parameters
-        const params = {
-            ACL : "public-read",
-            Bucket: 'wagenwiz',
-            Key: keyname, // File name you want to save as in S3
-            Body: fileContent 
-        };
-    
-        // Uploading files to the bucket
-        await s3.upload(params, function(err, data) {
-            if (err) {
-                throw err;
-            }
-    
-            query = {
-                'transanction_hash' : transanction_hash
-            };
-    
-            console.log(data)
-    
-            driverProfile.findOneAndUpdate(query , { profile_pic : data.Location }, function(err, doc) {
-                if (err) return res.send(500, {error: err});
-                res.send({
-                    "response_code": 200,
-                    "response_message": "Success",
-                    "response_data": data
-                }); 
-                }).clone().catch(function(err){ console.log(err)});
-    
-        });
+});
         
-        
-})
-
 module.exports = pickup;
