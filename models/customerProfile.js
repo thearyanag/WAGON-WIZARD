@@ -25,9 +25,16 @@ const user_profile = new Schema({
             required : [true , 'Phone number is compulsory !'],
             min : 10
         },
-        mail_id : {
-            type : String
-        },
+        mail_id: {
+      type: String,
+      unique: [true, "email id is already present"],
+
+      validate(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error("invalid email");
+        }
+      },
+    },
         address : {
             type : String
         },
