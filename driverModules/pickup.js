@@ -25,43 +25,44 @@ const AWSUpload = async (keyname, File) => {
     return result.Location;
 }
 
-pickup.get('/', async (req, res) => {
-    res.status(200).send('Bella Ciao !');
-});
-
-pickup.get('/allPickupData', async (req, res) => {
+pickup.post('/allPickupData', async (req, res) => {
     const { transanction_hash } = req.body;
 
-    query = { 'user_id': transanction_hash };
+    var query = {
+        'drivers' : {
+            'selected' : transanction_hash,
+            'assigned' : []
+        }
+    };
 
-    const result = tripDetails.find(query, function (err, doc) {
+    const result = await tripDetails.find({'transanction_hash' : transanction_hash}, function (err, doc) {
         if (err) {
             res.status(501).send(err);
-        } else {
-            res.status(200).send(doc);
         }
-    }).clone();
-
+    }).clone();""
     res.status(200).send(result);
+
 });
 
 
-pickup.get('/pickupData', async (req, res) => {
+pickup.post('/pickupdata', async (req, res) => {
     const { transanction_hash, tripId } = req.body;
 
-    query = {
-        'user_id': transanction_hash,
-        'trip_id': tripId
+    var query = {
+        'drivers' : {
+            'selected' : transanction_hash
+        },
+        'tripId': tripId
     };
 
-    const result = tripDetails.find(query, function (err, doc) {
+    console.log(query);
+
+    const result = await tripDetails.find(query, function (err, doc) {
         if (err) {
             res.status(501).send(err);
-        } else {
-            res.status(200).send(doc);
         }
     }).clone();
-
+    console.log(result);
     res.status(200).send(result);
 });
 

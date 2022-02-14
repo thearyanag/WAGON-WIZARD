@@ -81,11 +81,16 @@ wss.on("connection", function (ws) {
       console.log(msg);
       
       if(msg.dataType == "new") {
-        hash = msg.transanction_hash;
-        ws.id = hash;
-        const status = "online";
-        updateDriverStatus(hash , status , ws); // hash is the driver id , hash is given to each ws connection
- 
+        if(msg.userType == "driver") {
+          hash = msg.transanction_hash;
+          ws.id = hash;
+          const status = "online";
+          updateDriverStatus(hash , status , ws); // hash is the driver id , hash is given to each ws connection
+        }
+        if(msg.userType == "workshop") {
+          hash = msg.workshopId;
+          ws.workshopId = hash;
+        }
       }
 
       if(msg.dataType == "update") {
@@ -132,10 +137,7 @@ wss.on("connection", function (ws) {
       });
       }
 
-      if(msg.dataType == "workshop") {
-        
-      }
-
+      
 
   });
 
