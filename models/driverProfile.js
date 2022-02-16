@@ -58,7 +58,8 @@ const driver_profile = new Schema({
         default : false
     },
     tripId : {
-        type : [String]
+        type : [String],
+        default : []
     }
 });
 

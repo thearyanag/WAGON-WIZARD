@@ -93,29 +93,35 @@ wss.on("connection", function (ws) {
         }
       }
 
-      if(msg.dataType == "update") {
-        update = msg.update;
-        console.log(update);
-        if(update == "exit") {
-           const status = "offline";
-           updateDriverStatus(ws.id , status , ws); // hash is the driver id , hash is given to each ws connection
-           ws.close();
-        } else if(update == "location") {
-          driver_id = ws.id;        
-          const location = msg.location;
-          const [lat,lang] = location;
-          console.log(hash,lat,lang);
-          updateDriverLocation(driver_id, location , ws);
+      if(msg.id) {
+        if(msg.dataType == "update") {
+          update = msg.update;
+          console.log(update);
+          if(update == "exit") {
+             const status = "offline";
+             updateDriverStatus(ws.id , status , ws); // hash is the driver id , hash is given to each ws connection
+             ws.close();
+          } else if(update == "location") {
+            driver_id = ws.id;        
+            const location = msg.location;
+            const [lat,lang] = location;
+            console.log(hash,lat,lang);
+            updateDriverLocation(driver_id, location , ws);
+          }
+          else if(update == "status") {
+            const driver_id = ws.id;
+            const status = msg.status;
+            updateDriverStatus(driver_id , status , ws);
+          } else if(update == "intriplocation") {
+            const driver_id = ws.id;
+            const location = msg.location;
+            updateTripLocation(driver_id , location , ws);
+          }
         }
-        else if(update == "status") {
-          const driver_id = ws.id;
-          const status = msg.status;
-          updateDriverStatus(driver_id , status , ws);
-        } else if(update == "intriplocation") {
-          const driver_id = ws.id;
-          const location = msg.location;
-          updateTripLocation(driver_id , location , ws);
-        }
+      }
+
+      if(msg.workshopId) {
+
       }
 
       if(msg.dataType == "server") {

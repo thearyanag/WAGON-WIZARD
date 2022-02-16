@@ -6,6 +6,7 @@ const { AWS } = require('../middleware/aws');
 
 const tripDetails = require('../models/tripDetails');
 const pickupDetails = require('../models/pickupdetails');
+const driverDetails = require('../models/driverProfile');
 
 const AWSUpload = async (keyname, File) => {
 
@@ -28,53 +29,70 @@ const AWSUpload = async (keyname, File) => {
 pickup.post('/allPickupData', async (req, res) => {
     const { transanction_hash } = req.body;
 
-    var query = {
-        'drivers' : {
-            'selected' : transanction_hash,
-            'assigned' : []
-        }
+    var driver_query = {
+        'transanction_hash' : transanction_hash
     };
 
-    const result = await tripDetails.find({'transanction_hash' : transanction_hash}, function (err, doc) {
-        if (err) {
-            res.status(501).send(err);
-        }
-    }).clone();""
-    res.status(200).send(result);
+    const driver = await driverDetails.findOne(driver_query , function(err,doc) {
+        if(err) res.status(500).send(err)
+    }).clone();
 
+    if(driver) {
+        var { tripId } = driver;
+        var trips = [];
+        var length = tripId.length;
+        for(let i=0 ; i<length ; i++) {
+            const trip_detail = await tripDetails.findOne({'tripId' : tripId} , function(err,doc) {
+                if(err) {
+                    return res.status(501).send(err);
+                }
+            }).clone();
+            trips.push(trip_detail);    
+        }
+        return res.status(200).send(trips)
+    }
+    return res.status(200).send("no such driver found");
 });
 
 
 pickup.post('/pickupdata', async (req, res) => {
     const { transanction_hash, tripId } = req.body;
 
-    var query = {
-        'drivers' : {
-            'selected' : transanction_hash
-        },
-        'tripId': tripId
-    };
+    var driver_query = {
+        'transanction_hash' : transanction_hash
+    }
 
-    console.log(query);
-
-    const result = await tripDetails.find(query, function (err, doc) {
-        if (err) {
-            res.status(501).send(err);
+    const driver = await driverDetails.findOne(driver_query , function(err,doc) {
+        if(err) {
+            return res.status(501).send(err)
         }
     }).clone();
-    console.log(result);
-    res.status(200).send(result);
+
+    if(driver) {
+        var trips = driver.tripId;
+        console.log(trips , tripId);
+        console.log(trips.includes(tripId))
+        if(trips.includes(tripId)) {
+            var query = {
+                'tripId' : tripId
+            };
+            const result = await tripDetails.findOne(query , function(err,doc) {
+                if(err) return res.status(501).send(err);
+            }).clone();
+            return res.status(200).send(result)
+        }
+    }
+    res.status(501).send('no driver founder');
 });
 
 pickup.post('/requestCashPickup', async (req, res) => {
     const { transanction_hash, tripId } = req.body;
 
     const query = {
-        'transanction_hash': transanction_hash,
         'trip_id': tripId
     };
 
-    tripDetails.findOne(query, function (err, doc) {
+    await tripDetails.findOne(query, function (err, doc) {
         if (err) {
             res.status(501).send(err);
         } else {
